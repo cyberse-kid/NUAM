@@ -1,0 +1,12 @@
+para descargar angular tienes que abrir la terminal y escribir
+
+npm install -g @angular/cli
+
+despues verificar que se instalo
+
+ng version
+
+para ver la pagina tienes que usar
+
+cd app
+ng serve
