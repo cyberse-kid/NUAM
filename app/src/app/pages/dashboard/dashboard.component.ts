@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { CalificacionesService } from '../calificaciones/services/calificaciones.service';
@@ -12,21 +12,15 @@ import { CalificacionesService } from '../calificaciones/services/calificaciones
 })
 export class Dashboard implements OnInit {
   
-  // KPIs
   totalCalificaciones = 0;
   calificacionesPendientes = 0;
   calificacionesActivas = 0;
   instrumentosNoInscritos = 0;
   ultimaCargaFecha = '—';
-
-  // Actividad reciente
   actividadReciente: any[] = [];
-  
-  // Estados
   loading = true;
   error = '';
 
-  // Datos para el gráfico de distribución
   distribucionEstados = {
     activas: 0,
     pendientes: 0,
@@ -36,14 +30,14 @@ export class Dashboard implements OnInit {
 
   constructor(
     private router: Router,
-    private calificacionesService: CalificacionesService
+    private calificacionesService: CalificacionesService,
+    private cdr: ChangeDetectorRef  // ✅ Agregar esto
   ) {}
 
   ngOnInit(): void {
     this.cargarDatosOptimizado();
   }
 
-  // ✅ MÉTODO OPTIMIZADO - Usa el endpoint dashboard_stats
   cargarDatosOptimizado(): void {
     this.loading = true;
     const startTime = performance.now();
@@ -52,7 +46,6 @@ export class Dashboard implements OnInit {
       next: (response) => {
         console.log(`⚡ Datos recibidos en ${(performance.now() - startTime).toFixed(2)}ms`);
         
-        // Asignar estadísticas directamente
         this.totalCalificaciones = response.stats.total;
         this.calificacionesActivas = response.stats.activas;
         this.calificacionesPendientes = response.stats.pendientes;
@@ -61,7 +54,6 @@ export class Dashboard implements OnInit {
           ? new Date(response.stats.ultima_fecha).toLocaleDateString('es-CL') 
           : '—';
         
-        // Actividad reciente ya viene optimizada
         this.actividadReciente = response.actividad_reciente.map((c: any) => ({
           tipo: 'Calificación',
           accion: 'creada',
@@ -71,23 +63,20 @@ export class Dashboard implements OnInit {
         }));
         
         this.loading = false;
+        this.cdr.detectChanges();  // ✅ Forzar detección de cambios
+        
         const totalTime = (performance.now() - startTime).toFixed(2);
         console.log(`✅ Dashboard cargado en ${totalTime}ms`);
-        console.log('📊 Estadísticas:', {
-          total: this.totalCalificaciones,
-          activas: this.calificacionesActivas,
-          pendientes: this.calificacionesPendientes
-        });
       },
       error: (err) => {
         console.error('❌ Error cargando dashboard:', err);
         this.error = 'Error al cargar los datos del dashboard';
         this.loading = false;
+        this.cdr.detectChanges();  // ✅ Forzar detección de cambios
       }
     });
   }
 
-  // Navegación
   goToCreate() {
     this.router.navigate(['/calificaciones/crear']);
   }
@@ -112,7 +101,6 @@ export class Dashboard implements OnInit {
     this.router.navigate(['/carga-masiva']);
   }
 
-  // Calcular porcentaje para barras de progreso
   calcularPorcentaje(valor: number, total: number): number {
     return total > 0 ? Math.round((valor / total) * 100) : 0;
   }

@@ -1,1 +1,227 @@
-<p>editar works!</p>
+<div class="editar-container">
+  
+  <!-- Header con breadcrumb -->
+  <div class="page-header">
+    <div class="breadcrumb">
+      <span (click)="volver()" class="breadcrumb-link">Dashboard</span>
+      <span class="separator">›</span>
+      <span (click)="cancelar()" class="breadcrumb-link">Calificaciones</span>
+      <span class="separator">›</span>
+      <span class="breadcrumb-current">Editar #{{ id }}</span>
+    </div>
+    <h1 class="page-title">✏️ Editar Calificación</h1>
+    <p class="page-subtitle">Modifica los datos de la calificación tributaria</p>
+  </div>
+
+  <!-- Loading inicial -->
+  <div *ngIf="loading" class="loading-card">
+    <div class="spinner"></div>
+    <p>Cargando calificación...</p>
+  </div>
+
+  <!-- Error 404 -->
+  <div *ngIf="notFound && !loading" class="error-card">
+    <div class="error-icon">❌</div>
+    <h2>Calificación no encontrada</h2>
+    <p>{{ error }}</p>
+    <button class="btn btn-primary" (click)="cancelar()">
+      Volver al listado
+    </button>
+  </div>
+
+  <!-- Formulario -->
+  <div *ngIf="!loading && !notFound" class="form-card">
+    
+    <!-- Mensajes -->
+    <div class="alert alert-error" *ngIf="error">
+      ⚠️ {{ error }}
+    </div>
+
+    <div class="alert alert-success" *ngIf="successMessage">
+      {{ successMessage }}
+    </div>
+
+    <form (ngSubmit)="guardar()" #calificacionForm="ngForm">
+
+      <!-- Sección: Información Básica -->
+      <div class="form-section">
+        <h3 class="section-title">📋 Información Básica</h3>
+
+        <!-- Campo Instrumento -->
+        <div class="form-group">
+          <label for="instrumento" class="form-label">
+            Instrumento <span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="instrumento"
+            class="form-input"
+            [(ngModel)]="form.instrumento" 
+            name="instrumento" 
+            placeholder="Ej: DJ1948-2024-001"
+            required
+            [disabled]="loadingSubmit">
+          <small class="form-hint">Código o identificador del instrumento tributario</small>
+        </div>
+
+        <!-- Campo Tipo de Calificación -->
+        <div class="form-group">
+          <label for="tipo_calificacion" class="form-label">
+            Tipo de Calificación <span class="required">*</span>
+          </label>
+          <select 
+            id="tipo_calificacion"
+            class="form-input"
+            [(ngModel)]="form.tipo_calificacion" 
+            name="tipo_calificacion"
+            required
+            [disabled]="loadingSubmit">
+            <option value="">Seleccione un tipo...</option>
+            <option *ngFor="let tipo of tiposCalificacion" [value]="tipo.value">
+              {{ tipo.label }}
+            </option>
+          </select>
+          <small class="form-hint">Tipo de calificación tributaria</small>
+        </div>
+
+        <!-- Campo Estado -->
+        <div class="form-group">
+          <label for="estado" class="form-label">
+            Estado
+          </label>
+          <select 
+            id="estado"
+            class="form-input"
+            [(ngModel)]="form.estado" 
+            name="estado"
+            [disabled]="loadingSubmit">
+            <option *ngFor="let estado of estadosDisponibles" [value]="estado.value">
+              {{ estado.label }}
+            </option>
+          </select>
+          <small class="form-hint">Estado actual de la calificación</small>
+        </div>
+      </div>
+
+      <!-- Sección: Valores y Cálculos -->
+      <div class="form-section">
+        <h3 class="section-title">💰 Valores y Cálculos</h3>
+
+        <!-- Campo Monto Original -->
+        <div class="form-group">
+          <label for="monto_original" class="form-label">
+            Monto Original
+          </label>
+          <div class="input-with-icon">
+            <span class="input-icon">$</span>
+            <input 
+              type="number" 
+              id="monto_original"
+              class="form-input with-icon"
+              [(ngModel)]="form.monto_original" 
+              name="monto_original"
+              placeholder="0.00"
+              [disabled]="loadingSubmit">
+          </div>
+          <small class="form-hint">Monto original asociado a la calificación</small>
+        </div>
+
+        <!-- Campo Factor Calculado -->
+        <div class="form-group">
+          <label for="factor_calculado" class="form-label">
+            Factor Calculado
+          </label>
+          <input 
+            type="number" 
+            id="factor_calculado"
+            class="form-input"
+            step="0.0001" 
+            [(ngModel)]="form.factor_calculado" 
+            name="factor_calculado"
+            placeholder="0.0000"
+            [disabled]="loadingSubmit">
+          <small class="form-hint">Factor de cálculo tributario con 4 decimales</small>
+        </div>
+      </div>
+
+      <!-- Sección: Información Adicional -->
+      <div class="form-section">
+        <h3 class="section-title">📝 Información Adicional</h3>
+
+        <!-- Campo Usuario Responsable -->
+        <div class="form-group">
+          <label for="usuario_responsable" class="form-label">
+            Usuario Responsable <span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="usuario_responsable"
+            class="form-input"
+            [(ngModel)]="form.usuario_responsable" 
+            name="usuario_responsable"
+            placeholder="Ej: Nicolás"
+            required
+            [disabled]="loadingSubmit">
+          <small class="form-hint">Nombre del usuario responsable de la calificación</small>
+        </div>
+
+        <!-- Campo Observaciones -->
+        <div class="form-group">
+          <label for="observaciones" class="form-label">
+            Observaciones
+          </label>
+          <textarea 
+            id="observaciones"
+            class="form-input form-textarea"
+            [(ngModel)]="form.observaciones" 
+            name="observaciones"
+            rows="4"
+            placeholder="Ingrese observaciones adicionales..."
+            [disabled]="loadingSubmit"></textarea>
+          <small class="form-hint">Comentarios o notas adicionales sobre la calificación</small>
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <div class="form-actions">
+        <button 
+          type="button" 
+          class="btn btn-danger" 
+          (click)="eliminar()"
+          [disabled]="loadingSubmit">
+          🗑️ Eliminar
+        </button>
+        
+        <div class="actions-right">
+          <button 
+            type="button" 
+            class="btn btn-secondary" 
+            (click)="cancelar()"
+            [disabled]="loadingSubmit">
+            Cancelar
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary"
+            [disabled]="loadingSubmit || !calificacionForm.valid">
+            <span *ngIf="!loadingSubmit">💾 Guardar Cambios</span>
+            <span *ngIf="loadingSubmit">⏳ Guardando...</span>
+          </button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Card de información -->
+  <div *ngIf="!loading && !notFound" class="info-card">
+    <h3>ℹ️ Información</h3>
+    <ul>
+      <li><strong>ID:</strong> {{ id }}</li>
+      <li>Los campos marcados con <span class="required">*</span> son obligatorios</li>
+      <li>Los cambios se guardarán al hacer clic en "Guardar Cambios"</li>
+      <li>Puedes eliminar esta calificación usando el botón "Eliminar"</li>
+    </ul>
+  </div>
+
+</div>
