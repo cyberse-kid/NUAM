@@ -1,0 +1,144 @@
+<div class="lista-container">
+  
+  <!-- Header -->
+  <div class="page-header">
+    <div class="breadcrumb">
+      <span (click)="volverDashboard()" class="breadcrumb-link">Dashboard</span>
+      <span class="separator">›</span>
+      <span class="breadcrumb-current">Calificaciones Tributarias</span>
+    </div>
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">📋 Calificaciones Tributarias</h1>
+        <p class="page-subtitle">Administra y consulta todas las calificaciones registradas</p>
+      </div>
+      <button class="btn btn-primary" (click)="crear()">
+        ➕ Nueva Calificación
+      </button>
+    </div>
+  </div>
+
+  <!-- Content Card -->
+  <div class="content-card">
+
+    <!-- Mensajes -->
+    <div class="alert alert-error" *ngIf="error">
+      ⚠️ {{ error }}
+    </div>
+
+    <div class="alert alert-success" *ngIf="successMessage">
+      {{ successMessage }}
+    </div>
+
+    <!-- Barra de búsqueda -->
+    <div class="search-bar">
+      <div class="search-input-group">
+        <span class="search-icon">🔍</span>
+        <input 
+          type="text" 
+          class="search-input"
+          [(ngModel)]="filtro" 
+          (keyup.enter)="buscar()"
+          placeholder="Buscar por instrumento, tipo, estado o usuario..."
+          [disabled]="loading">
+        <button 
+          *ngIf="filtro" 
+          class="clear-btn" 
+          (click)="limpiarFiltro()"
+          [disabled]="loading">
+          ✕
+        </button>
+      </div>
+      <button class="btn btn-search" (click)="buscar()" [disabled]="loading">
+        Buscar
+      </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando calificaciones...</p>
+    </div>
+
+    <!-- Tabla -->
+    <div *ngIf="!loading && calificaciones.length > 0" class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Instrumento</th>
+            <th>Tipo</th>
+            <th>Monto Original</th>
+            <th>Factor</th>
+            <th>Estado</th>
+            <th>Usuario</th>
+            <th>Fecha Registro</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let c of calificaciones; let i = index" 
+              [class.row-even]="i % 2 === 0">
+            <td class="id-cell">{{ c.id_calificacion }}</td>
+            <td class="instrument-cell">{{ c.instrumento }}</td>
+            <td>
+              <span class="badge badge-type">{{ c.tipo_calificacion }}</span>
+            </td>
+            <td class="amount-cell">
+              {{ c.monto_original ? ('$' + (+c.monto_original).toLocaleString('es-CL')) : '—' }}
+            </td>
+            <td class="factor-cell">{{ c.factor_calculado || '—' }}</td>
+            <td>
+              <span class="badge" 
+                    [class.badge-active]="c.estado === 'Activa'"
+                    [class.badge-pending]="c.estado === 'Pendiente'"
+                    [class.badge-inactive]="c.estado === 'Inactiva'"
+                    [class.badge-rejected]="c.estado === 'Rechazada'">
+                {{ c.estado }}
+              </span>
+            </td>
+            <td class="user-cell">{{ c.usuario_responsable }}</td>
+            <td class="date-cell">{{ c.fecha_registro | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td class="actions-cell">
+              <button class="btn-icon btn-edit" 
+                      (click)="editar(c.id_calificacion)"
+                      title="Editar">
+                ✏️
+              </button>
+              <button class="btn-icon btn-delete" 
+                      (click)="eliminar(c.id_calificacion)"
+                      title="Eliminar">
+                🗑️
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Resumen -->
+      <div class="table-footer">
+        <p class="results-count">
+          Mostrando <strong>{{ calificaciones.length }}</strong> 
+          {{ calificaciones.length === 1 ? 'calificación' : 'calificaciones' }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && calificaciones.length === 0" class="empty-state">
+      <div class="empty-icon">📭</div>
+      <h3>No hay calificaciones registradas</h3>
+      <p *ngIf="!filtro">Comienza creando tu primera calificación tributaria</p>
+      <p *ngIf="filtro">No se encontraron resultados para "{{ filtro }}"</p>
+      <button class="btn btn-primary" (click)="crear()" *ngIf="!filtro">
+        ➕ Crear Primera Calificación
+      </button>
+      <button class="btn btn-secondary" (click)="limpiarFiltro()" *ngIf="filtro">
+        Limpiar búsqueda
+      </button>
+    </div>
+
+  </div>
+
+</div>

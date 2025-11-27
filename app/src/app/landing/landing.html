@@ -1,1 +1,82 @@
-<p>landing works!</p>
+<div class="landing-container">
+  
+  <!-- Header -->
+  <header class="landing-header">
+    <div class="logo">
+      <h1>🏛️ Mantenedor Tributario</h1>
+    </div>
+    <nav>
+      <button (click)="goToLogin()" class="btn-login">Iniciar Sesión</button>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">Sistema de Gestión Tributaria</h1>
+      <p class="hero-subtitle">
+        Administra calificaciones, instrumentos y cargas masivas de manera eficiente y centralizada
+      </p>
+      <div class="hero-buttons">
+        <button (click)="goToDashboard()" class="btn-primary">
+          Ir al Dashboard
+        </button>
+        <button (click)="goToCalificaciones()" class="btn-secondary">
+          Ver Calificaciones
+        </button>
+      </div>
+    </div>
+    
+    <div class="hero-image">
+      <div class="dashboard-preview">
+        <div class="preview-card">
+          <div class="preview-header"></div>
+          <div class="preview-content">
+            <div class="preview-line"></div>
+            <div class="preview-line short"></div>
+            <div class="preview-line"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <h2 class="section-title">Funcionalidades Principales</h2>
+    
+    <div class="features-grid">
+      <div class="feature-card" *ngFor="let feature of features">
+        <div class="feature-icon">{{ feature.icon }}</div>
+        <h3>{{ feature.title }}</h3>
+        <p>{{ feature.description }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="stats-section">
+    <div class="stat-item">
+      <h3>99.9%</h3>
+      <p>Disponibilidad</p>
+    </div>
+    <div class="stat-item">
+      <h3>24/7</h3>
+      <p>Soporte</p>
+    </div>
+    <div class="stat-item">
+      <h3>Seguro</h3>
+      <p>Datos Protegidos</p>
+    </div>
+    <div class="stat-item">
+      <h3>Rápido</h3>
+      <p>Procesamiento</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="landing-footer">
+    <p>&copy; 2024 Sistema de Mantenedor Tributario. Todos los derechos reservados.</p>
+  </footer>
+
+</div>

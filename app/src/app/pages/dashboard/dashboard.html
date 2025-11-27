@@ -1,0 +1,214 @@
+<div class="dashboard-container">
+
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">🏛️ Mantenedor Tributario</h1>
+        <p class="page-subtitle">Panel de control general - Vista ejecutiva</p>
+      </div>
+      <button class="btn btn-primary" (click)="goToCreate()">
+        ➕ Nueva Calificación
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Cargando dashboard...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="alert alert-error">
+    ⚠️ {{ error }}
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!loading && !error">
+
+    <!-- KPIs Section -->
+    <div class="kpi-section">
+      <div class="kpi-card card-primary" (click)="goToCalificaciones()">
+        <div class="kpi-icon">📊</div>
+        <div class="kpi-content">
+          <h3 class="kpi-value">{{ totalCalificaciones }}</h3>
+          <p class="kpi-label">Total Calificaciones</p>
+        </div>
+      </div>
+
+      <div class="kpi-card card-success" (click)="goToCalificaciones()">
+        <div class="kpi-icon">✅</div>
+        <div class="kpi-content">
+          <h3 class="kpi-value">{{ calificacionesActivas }}</h3>
+          <p class="kpi-label">Activas</p>
+        </div>
+      </div>
+
+      <div class="kpi-card card-warning" (click)="goToCalificaciones()">
+        <div class="kpi-icon">⏳</div>
+        <div class="kpi-content">
+          <h3 class="kpi-value">{{ calificacionesPendientes }}</h3>
+          <p class="kpi-label">Pendientes de Revisión</p>
+        </div>
+      </div>
+
+      <div class="kpi-card card-info" (click)="goToInstrumentos()">
+        <div class="kpi-icon">📅</div>
+        <div class="kpi-content">
+          <h3 class="kpi-value">{{ ultimaCargaFecha }}</h3>
+          <p class="kpi-label">Última Actualización</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Distribución de Estados -->
+    <div class="stats-section">
+      <div class="stats-card">
+        <h3 class="section-title">📈 Distribución por Estado</h3>
+        
+        <div class="stat-item">
+          <div class="stat-header">
+            <span class="stat-label">
+              <span class="badge badge-active">Activas</span>
+            </span>
+            <span class="stat-value">{{ distribucionEstados.activas }}</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill bg-active" 
+                 [style.width.%]="calcularPorcentaje(distribucionEstados.activas, totalCalificaciones)">
+            </div>
+          </div>
+          <span class="stat-percentage">
+            {{ calcularPorcentaje(distribucionEstados.activas, totalCalificaciones) }}%
+          </span>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-header">
+            <span class="stat-label">
+              <span class="badge badge-pending">Pendientes</span>
+            </span>
+            <span class="stat-value">{{ distribucionEstados.pendientes }}</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill bg-pending" 
+                 [style.width.%]="calcularPorcentaje(distribucionEstados.pendientes, totalCalificaciones)">
+            </div>
+          </div>
+          <span class="stat-percentage">
+            {{ calcularPorcentaje(distribucionEstados.pendientes, totalCalificaciones) }}%
+          </span>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-header">
+            <span class="stat-label">
+              <span class="badge badge-inactive">Inactivas</span>
+            </span>
+            <span class="stat-value">{{ distribucionEstados.inactivas }}</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill bg-inactive" 
+                 [style.width.%]="calcularPorcentaje(distribucionEstados.inactivas, totalCalificaciones)">
+            </div>
+          </div>
+          <span class="stat-percentage">
+            {{ calcularPorcentaje(distribucionEstados.inactivas, totalCalificaciones) }}%
+          </span>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-header">
+            <span class="stat-label">
+              <span class="badge badge-rejected">Rechazadas</span>
+            </span>
+            <span class="stat-value">{{ distribucionEstados.rechazadas }}</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill bg-rejected" 
+                 [style.width.%]="calcularPorcentaje(distribucionEstados.rechazadas, totalCalificaciones)">
+            </div>
+          </div>
+          <span class="stat-percentage">
+            {{ calcularPorcentaje(distribucionEstados.rechazadas, totalCalificaciones) }}%
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accesos Rápidos -->
+    <div class="quick-actions-section">
+      <h3 class="section-title">⚡ Accesos Rápidos</h3>
+      
+      <div class="actions-grid">
+        <div class="action-card" (click)="goToCreate()">
+          <div class="action-icon">➕</div>
+          <h4>Crear Calificación</h4>
+          <p>Registra una nueva calificación tributaria</p>
+        </div>
+
+        <div class="action-card" (click)="goToCalificaciones()">
+          <div class="action-icon">📋</div>
+          <h4>Ver Calificaciones</h4>
+          <p>Consulta y administra calificaciones</p>
+        </div>
+
+        <div class="action-card" (click)="goToCargaMontos()">
+          <div class="action-icon">📁</div>
+          <h4>Cargar DJ1948</h4>
+          <p>Importa archivo de montos masivos</p>
+        </div>
+
+        <div class="action-card" (click)="goToCargaFactores()">
+          <div class="action-icon">📊</div>
+          <h4>Cargar Factores</h4>
+          <p>Importa factores tributarios</p>
+        </div>
+
+        <div class="action-card" (click)="goToInstrumentos()">
+          <div class="action-icon">🛠️</div>
+          <h4>Instrumentos No Inscritos</h4>
+          <p>Gestiona instrumentos pendientes</p>
+        </div>
+
+        <div class="action-card" (click)="goToCargaMasiva()">
+          <div class="action-icon">🗂️</div>
+          <h4>Gestor de Cargas</h4>
+          <p>Administra todas las cargas masivas</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actividad Reciente -->
+    <div class="activity-section">
+      <h3 class="section-title">🕒 Actividad Reciente</h3>
+      
+      <div class="activity-card" *ngIf="actividadReciente.length > 0">
+        <div class="activity-item" *ngFor="let actividad of actividadReciente">
+          <div class="activity-icon">
+            <span class="icon-badge">📝</span>
+          </div>
+          <div class="activity-content">
+            <p class="activity-text">
+              <strong>{{ actividad.tipo }}</strong> {{ actividad.accion }}:
+              <span class="activity-detail">{{ actividad.detalle }}</span>
+            </p>
+            <div class="activity-meta">
+              <span class="activity-user">👤 {{ actividad.usuario }}</span>
+              <span class="activity-date">
+                {{ actividad.fecha | date:'dd/MM/yyyy HH:mm' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="empty-activity" *ngIf="actividadReciente.length === 0">
+        <p>No hay actividad reciente registrada</p>
+      </div>
+    </div>
+
+  </div>
+
+</div>
